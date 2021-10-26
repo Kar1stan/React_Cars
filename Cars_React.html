@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/create-react-class@15.6.2/create-react-class.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+     var Car  = createReactClass({
+        getInitialState:function(){
+            return{checked:true,edit:false,remove:false,save:false}
+        },
+        handleCheck:function(){
+          this.setState({checked:!this.state.checked})
+        },
+        edit:function(){
+           this.setState({edit:true})
+        },
+        remove:function(){
+          this.setState({remove:true})
+          this.props.deleteCar(this.props.index);
+        },
+        save:function(){
+           this.setState({save:true})
+           this.props.update(this.refs.newName.value,this.props.index);
+           this.props.update(this.refs.newPrice.value,this.props.index);
+           this.props.update(this.refs.newSpeed.value,this.props.index);
+        },
+        rendNorm:function(){
+          let message;
+            if(this.state.checked){
+                message='выбран';
+              }
+              else{
+                message='не выбран';
+              }
+            return (
+             <div className="card">
+                <h1>{this.props.img}</h1>
+                <h3>{this.props.name}</h3>
+                <p>{this.props.price}</p>
+                <p>{this.props.speed}</p>
+                <button onClick={this.edit} className="btn light">Редактировать</button>
+                <button onClick={this.remove}  className="btn red">Удалить</button>
+                <input type="checkbox" onChange={this.handleCheck} defaultChecked={this.state.checked}/>
+                <p>Чекбокс {message}</p>
+              </div>
+            );
+        },
+        rendEdit:function(){
+            return (
+             <div className="card">
+                <textarea ref="newName" defaultValue={this.props.name}></textarea>
+                <textarea ref="newPrice" defaultValue={this.props.price}></textarea>
+                <textarea ref="newSpeed" defaultValue={this.props.speed}></textarea>
+                <button onClick={this.save} className="btn success">Сохранить</button>
+                <input type="checkbox" onChange={this.handleCheck} defaultChecked={this.state.checked}/>
+              </div>
+            );
+        },
+          render:function(){
+            if(this.state.edit){
+              return this.rendEdit();
+            }
+            else{
+              return this.rendNorm();
+            }
+          }
+      });
+      var Field  = createReactClass({
+          getInitialState:function(){
+             return{
+               cars: [   
+                 {img:'/Images/Toyota.jpeg',name:'Toyata 27',price:1300,speed:160+'km/h'},
+                 {img:'Images/Bentley.jpeg',name:'Bentley XQ',price:2200,speed:190+'km/h'},
+                 {img:'/Images/Honda.jpeg',name:'Honda C4',price:1845,speed:170+'km/h'},
+                 {img:'/Images/Audi.jpeg',name:'Audi M12',price:1100,speed:120+'km/h'}
+                ]
+             }
+          },
+          add:function(text){
+            var arr=this.state.cars;
+            arr.push(text);
+            this.setState({cars:arr});
+          },
+          deleteCar:function(i){
+             var arr=this.state.cars;
+             arr.splice(i,4);
+             this.setState({cars:arr});
+          },
+          updateCar:function(text,i){
+              var arr=this.state.cars;
+              arr[i]=text;
+              this.setState({cars:arr});
+          },
+          eachCar:function(item,i){
+            return (
+            <Car key={i} index={i} update={this.updateCar} deleteCar={this.deleteCar}>
+              {item}
+            </Car>
+              );
+          },
+          render:function(){
+            return(
+            <div className="list">
+              <button onClick={this.add.bind(null,cars)}>Новая машина</button>
+              {this.state.cars.map(this.eachCar) }
+            </div>
+            );
+          }
+      });
+
+      ReactDOM.render( <Field/> , document.getElementById("root"));
+    </script>
+  </body>
+</html>
